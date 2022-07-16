@@ -4,7 +4,7 @@ function Paging(props) {
     const [pages, setPages] = useState(0);
 
     useEffect(() => {
-        let length = props.length % 5 == 0 ? props.length/5 : Math.floor(props.length/5)+1;
+        let length = props.length % 5 === 0 ? props.length/5 : Math.floor(props.length/5)+1;
         setPages(length);
     }, []);
 
