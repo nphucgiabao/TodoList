@@ -17,7 +17,6 @@ function List(props) {
     });
 
     return(
-         
         <table className='table table-bordered'>
             <thead>
                 <tr>

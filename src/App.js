@@ -16,10 +16,19 @@ function App() {
   const [workEdit, setWorkEdit] = useState({});
   const [type, setType] = useState('Add');
   const [filter, setFilter] = useState(null);
+  const [paging, setPaging] = useState(0);
+  const [length, setLength] = useState(() => {
+    let list = data();
+    return list.length;
+  });
 
   useEffect(() => {
-    
-  }, [works]);
+    setWorks(change(paging));
+  }, [paging]);
+
+  useEffect(() => {
+    setPaging(paging);
+  }, [length]);
 
   const edit = (id) => {
     let work = works.find((item) => item.id === id);
@@ -29,38 +38,40 @@ function App() {
   }
 
   const add = (work) => {
-    //console.log(works.includes(work));
-    setWorks((prev) => {
-      //console.log(prev);
-      return [...prev, work];
-    });
-    localStorage.setItem('store', JSON.stringify([...works, work]));
+    let list = JSON.parse(localStorage.getItem('store'));
+    localStorage.setItem('store', JSON.stringify([...list, work]));
+    setWorks(change(paging));    
+    setLength(list.length++);
     alert('Success');
   }
 
   const update = (work) => {
-    let newData = works.map((item) => {
+    let list = JSON.parse(localStorage.getItem('store'));
+    let newData = list.map((item) => {
       if (item.id === work.id)
         return work;
       return item;
     });
-    setWorks(newData);
-    setType('Add');
     localStorage.setItem('store', JSON.stringify(newData));
+    setWorks(change(paging));
+    setType('Add');    
     alert('Success');
   }
 
   const remove = (id) => {
-    if(window.confirm('Do you want remove this item?')){
-      var newWorks = works.filter((item)=> item.id !== id);
-      setWorks(newWorks);
-      localStorage.setItem('store', JSON.stringify(works));
+    if (window.confirm('Do you want remove this item?')) {
+      let list = JSON.parse(localStorage.getItem('store'));
+      var newWorks = list.filter((item) => item.id !== id);
+      localStorage.setItem('store', JSON.stringify(newWorks));   
+      setWorks(change(paging));         
+      setLength(newWorks.length);
     }
   }
 
   const search = (keyWord) => {
     if (keyWord) {
-      let data = works.filter((item) => {
+      let list = JSON.parse(localStorage.getItem('store'));
+      let data = list.filter((item) => {
         return item.name.indexOf(keyWord) >= 0;
       });
       setFilter(data);
@@ -70,10 +81,10 @@ function App() {
   }
 
   const change = (number) => {
+    let list = JSON.parse(localStorage.getItem('store'));
     let index = number * 5 ;
-    let length = (index + 5) > works.length ? works.length : (index + 5);
-    let data = works.slice(index, length);
-    setWorks(data);
+    let length = (index + 5) > list.length ? list.length : (index + 5);   
+    return list.slice(index, length);
   }
 
   return (
@@ -96,7 +107,7 @@ function App() {
               <List works={filter || works} editWork={edit} removeWork={remove} filter={filter}></List>
             </div>   
             <div className='container-fluid'>
-              <Paging length={works.length} changePage={change}></Paging>
+              <Paging length={length} page={paging} changePage={(number) => setPaging(number)}></Paging>
             </div>          
           </div>
         </div>

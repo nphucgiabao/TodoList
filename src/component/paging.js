@@ -8,10 +8,14 @@ function Paging(props) {
         setPages(length);
     }, []);
 
+    useEffect(() => {
+
+    }, [props]);
+
     const render = () => {       
         let result = [];
         for(let i = 0; i < pages; i++){
-            result.push((<li key={i} className="page-item"><a className="page-link" onClick={() => props.changePage(i)}>{(i+1)}</a></li>));
+            result.push((<li key={i} className={"page-item "+ props.page === i ?? "active"}><a className="page-link" onClick={() => props.changePage(i)}>{(i+1)}</a></li>));
         }
         return result;
     }
